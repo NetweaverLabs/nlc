@@ -4,43 +4,68 @@ Copyright © 2025 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
+	"github.com/NetweaverLabs/nlc/client"
+	"github.com/NetweaverLabs/nlc/request"
+	"github.com/NetweaverLabs/nlc/response"
+	"github.com/NetweaverLabs/types"
 	"github.com/spf13/cobra"
 )
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "used to create account for the forge",
+	Long: `The create command will send username and password to daemon which will communicate with our server to create your account. 
+For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
+nlc create -u admin -p passwd
+`,
+	RunE: func(cmd *cobra.Command, args []string) error {
 		username, err := cmd.Flags().GetString("username")
 		if err != nil {
-			return
+			return err
 		}
-		if username == "" {
-			fmt.Println("username is required.")
-			cmd.Help()
+		passwd, err := cmd.Flags().GetString("passwd")
+		if err != nil {
+			return err
 		}
+		user := &types.User{
+			Username: username,
+			Password: passwd,
+		}
+		dc, err := client.NewDaemonClient()
+		if err != nil {
+			return err
+		}
+		err = dc.Send(
+			&request.Request{
+				Cmd:  "create",
+				Args: user,
+			},
+		)
+		if err != nil {
+			return err
+		}
+		resp := &response.Response{}
+		if err := dc.Recieve(resp); err != nil {
+			return err
+		}
+		if resp.Status != "OK" {
+			return errors.New("check daemon logs, something went wrong")
+		}
+		fmt.Println(resp.Payload)
+		return nil
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(createCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// createCmd.PersistentFlags().String("foo", "", "A help for foo")
-	createCmd.Flags().StringP("username", "u", "", "username name for your account")
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	createCmd.Flags().StringP("username", "u", "", "set username for your account")
+	createCmd.Flags().StringP("passwd", "p", "", "set password for your account")
+	createCmd.MarkFlagRequired("username")
+	createCmd.MarkFlagRequired("passwd")
 }

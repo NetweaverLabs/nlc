@@ -1,3 +1,5 @@
+github.com/NetweaverLabs/types v0.0.0-20250121174622-5334c766f093 h1:tE1ApZPfIdprCMzVlxt0a52vieYN4iJMGBMErn+W5kU=
+github.com/NetweaverLabs/types v0.0.0-20250121174622-5334c766f093/go.mod h1:0KXt6t2IZCbe29PR/LRG9/OkEAbvpKCWcS/cvtZmpyI=
 github.com/cpuguy83/go-md2man/v2 v2.0.4/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=

@@ -6,9 +6,9 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/NetweaverLab/nlc/client"
-	"github.com/NetweaverLab/nlc/request"
-	"github.com/NetweaverLab/nlc/response"
+	"github.com/NetweaverLabs/nlc/client"
+	"github.com/NetweaverLabs/nlc/request"
+	"github.com/NetweaverLabs/nlc/response"
 	"github.com/spf13/cobra"
 )
 
@@ -29,10 +29,10 @@ func Echo(payload ...string) error {
 		return err
 	}
 	if resp.Status != "OK" {
-		return fmt.Errorf("error by daemon for echo, check /tmp/nld.log")
+		return fmt.Errorf("%v", resp.Payload)
 	}
 	str := ""
-	for _, p := range resp.Payload {
+	for _, p := range resp.Payload.([]string) {
 		str += p + " "
 	}
 	fmt.Println(str)
@@ -48,11 +48,12 @@ it will respond back with the same payload. For example:
 nlc echo <payload>
 daemon will respond as <payload>
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		err := Echo(args...)
 		if err != nil {
-			fmt.Println(err.Error())
+			return err
 		}
+		return nil
 	},
 }
 
